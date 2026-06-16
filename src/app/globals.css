@@ -1,0 +1,245 @@
+/* src/app/globals.css */
+@import "tailwindcss";
+
+:root {
+  --font-sans: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  
+  /* Harmonious Dark Mode Palette */
+  --bg-main: #0b0f19;
+  --bg-card: rgba(22, 28, 45, 0.7);
+  --bg-card-hover: rgba(30, 39, 62, 0.85);
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-color-active: rgba(255, 255, 255, 0.18);
+  
+  /* Text Colors */
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  
+  /* Core Accents & Gradients */
+  --accent-gold: #f59e0b; /* Golden Glow */
+  --accent-gold-gradient: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+  --accent-blue: #3b82f6;
+  --accent-blue-gradient: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
+  --accent-purple: #8b5cf6;
+  --accent-purple-gradient: linear-gradient(135deg, #a78bfa 0%, #6d28d9 100%);
+  
+  /* Intent & Status Colors */
+  --color-hot: #ef4444;
+  --color-warm: #f59e0b;
+  --color-cold: #3b82f6;
+  --color-spam: #64748b;
+
+  --color-hot-bg: rgba(239, 68, 68, 0.15);
+  --color-warm-bg: rgba(245, 158, 11, 0.15);
+  --color-cold-bg: rgba(59, 130, 246, 0.15);
+  --color-spam-bg: rgba(100, 116, 139, 0.15);
+
+  --sidebar-width: 260px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
+/* Custom Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Layout containers */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: var(--sidebar-width);
+  background: rgba(15, 22, 38, 0.95);
+  border-right: 1px solid var(--border-color);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  height: 100vh;
+  z-index: 10;
+  backdrop-filter: blur(10px);
+}
+
+.main-content {
+  flex: 1;
+  margin-left: var(--sidebar-width);
+  min-height: 100vh;
+  padding: 2rem;
+  background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.05), transparent 40%),
+              radial-gradient(circle at bottom left, rgba(245, 158, 11, 0.03), transparent 30%);
+}
+
+/* Glassmorphic Cards */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 1.5rem;
+  backdrop-filter: blur(12px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-color-active);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+}
+
+/* Premium Typography */
+h1 {
+  font-size: 1.875rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  background: linear-gradient(135deg, #f8fafc 0%, #cbd5e1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.5rem;
+}
+
+h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Form controls */
+.input-field {
+  width: 100%;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  color: var(--text-primary);
+  font-family: inherit;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.input-field:focus {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+/* Interactive Buttons */
+.btn-primary {
+  background: var(--accent-blue-gradient);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-primary:hover {
+  opacity: 0.95;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-secondary {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--border-color-active);
+}
+
+.btn-gold {
+  background: var(--accent-gold-gradient);
+  color: #0b0f19;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-gold:hover {
+  opacity: 0.95;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+/* Status Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.badge-hot { color: var(--color-hot); background: var(--color-hot-bg); border: 1px solid rgba(239, 68, 68, 0.3); }
+.badge-warm { color: var(--color-warm); background: var(--color-warm-bg); border: 1px solid rgba(245, 158, 11, 0.3); }
+.badge-cold { color: var(--color-cold); background: var(--color-cold-bg); border: 1px solid rgba(59, 130, 246, 0.3); }
+.badge-spam { color: var(--text-muted); background: var(--color-spam-bg); border: 1px solid rgba(148, 163, 184, 0.3); }
+
+/* Animation utilities */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

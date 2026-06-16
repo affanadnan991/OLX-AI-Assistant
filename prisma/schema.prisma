@@ -1,0 +1,187 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// ─── Models ──────────────────────────────────────────
+
+model Customer {
+  id              String    @id @default(cuid())
+  externalId      String?   @unique
+  name            String?
+  phone           String?
+  platform        String    @default("OLX")
+  metadata        Json?
+  behaviorProfile Json?
+
+  leads           Lead[]
+  conversations   Conversation[]
+
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([externalId])
+  @@index([phone])
+}
+
+model Product {
+  id                  String        @id @default(cuid())
+  name                String
+  brand               String
+  model               String
+  price               Int
+  minAcceptablePrice  Int?
+  batteryHealth       Int?
+  condition           String?
+  ptaApproved         Boolean       @default(false)
+  location            String?
+  deliveryAvailable   Boolean       @default(false)
+  exchangePossible    Boolean       @default(false)
+  warranty            String?
+  specifications      Json?
+  images              Json?
+  status              String        @default("ACTIVE")
+
+  leads               Lead[]
+
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+
+  @@index([brand])
+  @@index([status])
+  @@index([price])
+}
+
+model Lead {
+  id              String          @id @default(cuid())
+  customerId      String
+  customer        Customer        @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  productId       String?
+  product         Product?        @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  source          String          @default("OLX")
+  status          String          @default("NEW")
+  temperature     String          @default("COLD")
+  currentScore    Int             @default(0)
+  assignedTo      String?
+  tags            Json?
+  notes           String?
+
+  lastContactAt   DateTime?
+
+  conversations   Conversation[]
+  scoreHistory    LeadScoreHistory[]
+  followUps       FollowUp[]
+
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([customerId])
+  @@index([productId])
+  @@index([status])
+  @@index([temperature])
+  @@index([createdAt])
+}
+
+model Conversation {
+  id              String              @id @default(cuid())
+  leadId          String
+  lead            Lead                @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  customerId      String
+  customer        Customer            @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  channel         String              @default("OLX_CHAT")
+  status          String              @default("ACTIVE")
+  summary         String?
+  messageCount    Int                 @default(0)
+
+  messages        Message[]
+
+  lastMessageAt   DateTime?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  @@index([leadId])
+  @@index([customerId])
+  @@index([status])
+  @@index([lastMessageAt])
+}
+
+model Message {
+  id              String       @id @default(cuid())
+  conversationId  String
+  conversation    Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  role            String
+  content         String
+  metadata        Json?
+  aiGenerated     Boolean      @default(false)
+  approved        Boolean      @default(true)
+
+  aiDecisions     AIDecision[]
+
+  createdAt       DateTime     @default(now())
+
+  @@index([conversationId])
+  @@index([createdAt])
+}
+
+model LeadScoreHistory {
+  id              String          @id @default(cuid())
+  leadId          String
+  lead            Lead            @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  temperature     String
+  score           Int
+  reasoning       String
+  signals         Json?
+  triggeredBy     String?
+
+  createdAt       DateTime        @default(now())
+
+  @@index([leadId])
+  @@index([createdAt])
+}
+
+model FollowUp {
+  id              String         @id @default(cuid())
+  leadId          String
+  lead            Lead           @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  type            String
+  status          String         @default("PENDING")
+  message         String
+  scheduledAt     DateTime
+  sentAt          DateTime?
+
+  createdAt       DateTime       @default(now())
+
+  @@index([leadId])
+  @@index([status])
+  @@index([scheduledAt])
+}
+
+model AIDecision {
+  id          String    @id @default(cuid())
+  messageId   String?
+  message     Message?  @relation(fields: [messageId], references: [id], onDelete: SetNull)
+
+  agentName   String
+  modelUsed   String
+  input       Json
+  output      Json
+  tokenCount  Int?
+  latencyMs   Int?
+
+  createdAt   DateTime  @default(now())
+
+  @@index([agentName])
+  @@index([messageId])
+  @@index([createdAt])
+}
