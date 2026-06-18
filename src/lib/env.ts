@@ -6,13 +6,13 @@ const envSchema = z.object({
 
   // OpenAI / AI Provider
   OPENAI_API_KEY: z.string().min(1, 'OPENAI_API_KEY is required'),
-  OPENAI_API_BASE: z.string().url().optional().default('https://api.openai.com/v1'),
+  OPENAI_API_BASE: z.string().optional().default('https://api.openai.com/v1'),
   OPENAI_MODEL_FAST: z.string().optional().default('gpt-4o-mini'),
   OPENAI_MODEL_SMART: z.string().optional().default('gpt-4o'),
 
   // App
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
-  NEXT_PUBLIC_APP_URL: z.string().url().optional().default('http://localhost:3000'),
+  NEXT_PUBLIC_APP_URL: z.string().optional().default('http://localhost:3000'),
 })
 
 type Env = z.infer<typeof envSchema>
