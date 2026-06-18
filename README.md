@@ -42,7 +42,7 @@ Humne apke local environment ke liye setup bohot simple kar diya hai:
 ### 2. Environment Setup (`.env` file):
 Project folder ke andar `.env` file ko check karein. Isme do important chezain hain:
 ```env
-DATABASE_URL="file:./dev.db" # SQLite local database path
+DATABASE_URL="postgresql://postgres:[YOUR-PASSWORD]@db.[YOUR-PROJECT-REF].supabase.co:5432/postgres?schema=public" # Supabase/PostgreSQL database connection string
 OPENAI_API_KEY="apki_openai_api_key_yahan_ayegi" # AI processing ke liye key
 ```
 > [!IMPORTANT]
