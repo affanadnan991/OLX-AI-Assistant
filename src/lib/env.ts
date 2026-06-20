@@ -13,6 +13,10 @@ const envSchema = z.object({
   // App
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   NEXT_PUBLIC_APP_URL: z.string().optional().default('http://localhost:3000'),
+
+  // Supabase
+  NEXT_PUBLIC_SUPABASE_URL: z.string().optional(),
+  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z.string().optional(),
 })
 
 type Env = z.infer<typeof envSchema>
