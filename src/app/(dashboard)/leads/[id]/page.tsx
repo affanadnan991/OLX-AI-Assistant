@@ -16,23 +16,38 @@ export default async function LeadDetailPage({ params }: LeadDetailPageProps) {
   const resolvedParams = await params
   const { id } = resolvedParams
 
-  const lead = await prisma.lead.findUnique({
-    where: { id },
-    include: {
-      customer: true,
-      product: true,
-      scoreHistory: {
-        orderBy: { createdAt: 'desc' }
-      },
-      conversations: {
-        include: {
-          messages: {
-            orderBy: { createdAt: 'asc' }
+  let lead = null
+  try {
+    lead = await prisma.lead.findUnique({
+      where: { id },
+      include: {
+        customer: true,
+        product: true,
+        scoreHistory: {
+          orderBy: { createdAt: 'desc' }
+        },
+        conversations: {
+          include: {
+            messages: {
+              orderBy: { createdAt: 'asc' }
+            }
           }
         }
       }
-    }
-  })
+    })
+  } catch (error: any) {
+    console.error("Database connection error in lead detail page:", error)
+    return (
+      <div className="card" style={{ padding: '2rem', maxWidth: '600px', margin: '2rem auto', border: '1px solid rgba(255,255,255,0.1)' }}>
+        <h1 style={{ color: 'var(--color-hot)', marginBottom: '1rem', fontSize: '1.5rem' }}>⚠️ Database Connection Error</h1>
+        <p style={{ marginBottom: '1rem', color: 'var(--text-secondary)' }}>Failed to load lead details from the database.</p>
+        <div style={{ background: 'rgba(0,0,0,0.3)', padding: '1rem', borderRadius: '8px', fontFamily: 'monospace', fontSize: '0.85rem', overflowX: 'auto', border: '1px solid rgba(255,255,255,0.05)', color: '#fca5a5' }}>
+          <strong>Error Details:</strong><br />
+          {error.message || String(error)}
+        </div>
+      </div>
+    )
+  }
 
   if (!lead) {
     notFound()

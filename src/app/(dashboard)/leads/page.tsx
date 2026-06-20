@@ -20,17 +20,32 @@ export default async function LeadsPage({ searchParams }: LeadsPageProps) {
   if (selectedTemp) where.temperature = selectedTemp
   if (selectedStatus) where.status = selectedStatus
 
-  const leads = await prisma.lead.findMany({
-    where,
-    include: {
-      customer: true,
-      product: true,
-      conversations: {
-        select: { id: true }
-      }
-    },
-    orderBy: { updatedAt: 'desc' }
-  })
+  let leads = []
+  try {
+    leads = await prisma.lead.findMany({
+      where,
+      include: {
+        customer: true,
+        product: true,
+        conversations: {
+          select: { id: true }
+        }
+      },
+      orderBy: { updatedAt: 'desc' }
+    })
+  } catch (error: any) {
+    console.error("Database connection error in leads page:", error)
+    return (
+      <div className="card" style={{ padding: '2rem', maxWidth: '600px', margin: '2rem auto', border: '1px solid rgba(255,255,255,0.1)' }}>
+        <h1 style={{ color: 'var(--color-hot)', marginBottom: '1rem', fontSize: '1.5rem' }}>⚠️ Database Connection Error</h1>
+        <p style={{ marginBottom: '1rem', color: 'var(--text-secondary)' }}>Failed to load leads from the database.</p>
+        <div style={{ background: 'rgba(0,0,0,0.3)', padding: '1rem', borderRadius: '8px', fontFamily: 'monospace', fontSize: '0.85rem', overflowX: 'auto', border: '1px solid rgba(255,255,255,0.05)', color: '#fca5a5' }}>
+          <strong>Error Details:</strong><br />
+          {error.message || String(error)}
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="animate-fade-in">

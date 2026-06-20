@@ -5,9 +5,24 @@ import { revalidatePath } from 'next/cache'
 export const dynamic = 'force-dynamic'
 
 export default async function ProductsPage() {
-  const products = await prisma.product.findMany({
-    orderBy: { createdAt: 'desc' }
-  })
+  let products = []
+  try {
+    products = await prisma.product.findMany({
+      orderBy: { createdAt: 'desc' }
+    })
+  } catch (error: any) {
+    console.error("Database connection error in products page:", error)
+    return (
+      <div className="card" style={{ padding: '2rem', maxWidth: '600px', margin: '2rem auto', border: '1px solid rgba(255,255,255,0.1)' }}>
+        <h1 style={{ color: 'var(--color-hot)', marginBottom: '1rem', fontSize: '1.5rem' }}>⚠️ Database Connection Error</h1>
+        <p style={{ marginBottom: '1rem', color: 'var(--text-secondary)' }}>Failed to load products from the database.</p>
+        <div style={{ background: 'rgba(0,0,0,0.3)', padding: '1rem', borderRadius: '8px', fontFamily: 'monospace', fontSize: '0.85rem', overflowX: 'auto', border: '1px solid rgba(255,255,255,0.05)', color: '#fca5a5' }}>
+          <strong>Error Details:</strong><br />
+          {error.message || String(error)}
+        </div>
+      </div>
+    )
+  }
 
   // Next.js Server Action to add a product directly
   async function createProductAction(formData: FormData) {

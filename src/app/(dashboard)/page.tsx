@@ -5,32 +5,60 @@ import Link from 'next/link'
 export const dynamic = 'force-dynamic'
 
 export default async function DashboardPage() {
-  // Fetch statistics directly from the database
-  const [
-    totalLeads,
-    hotLeads,
-    negotiatingLeads,
-    wonLeads,
-    totalProducts,
-    recentLeads
-  ] = await Promise.all([
-    prisma.lead.count(),
-    prisma.lead.count({ where: { temperature: 'HOT' } }),
-    prisma.lead.count({ where: { status: 'NEGOTIATING' } }),
-    prisma.lead.count({ where: { status: 'CLOSED_WON' } }),
-    prisma.product.count({ where: { status: 'ACTIVE' } }),
-    prisma.lead.findMany({
-      take: 5,
-      orderBy: { updatedAt: 'desc' },
-      include: {
-        customer: true,
-        product: true,
-      }
-    })
-  ])
+  let stats;
+  try {
+    const [
+      totalLeads,
+      hotLeads,
+      negotiatingLeads,
+      wonLeads,
+      totalProducts,
+      recentLeads
+    ] = await Promise.all([
+      prisma.lead.count(),
+      prisma.lead.count({ where: { temperature: 'HOT' } }),
+      prisma.lead.count({ where: { status: 'NEGOTIATING' } }),
+      prisma.lead.count({ where: { status: 'CLOSED_WON' } }),
+      prisma.product.count({ where: { status: 'ACTIVE' } }),
+      prisma.lead.findMany({
+        take: 5,
+        orderBy: { updatedAt: 'desc' },
+        include: {
+          customer: true,
+          product: true,
+        }
+      })
+    ])
+    stats = {
+      totalLeads,
+      hotLeads,
+      negotiatingLeads,
+      wonLeads,
+      totalProducts,
+      recentLeads,
+      conversionRate: totalLeads > 0 ? ((wonLeads / totalLeads) * 100).toFixed(1) : '0.0'
+    }
+  } catch (error: any) {
+    console.error("Database connection error in dashboard:", error)
+    return (
+      <div className="card" style={{ padding: '2rem', maxWidth: '600px', margin: '2rem auto', border: '1px solid rgba(255,255,255,0.1)' }}>
+        <h1 style={{ color: 'var(--color-hot)', marginBottom: '1rem', fontSize: '1.5rem' }}>⚠️ Database Connection Error</h1>
+        <p style={{ marginBottom: '1rem', color: 'var(--text-secondary)' }}>Dashboard could not load data from the database.</p>
+        <div style={{ background: 'rgba(0,0,0,0.3)', padding: '1rem', borderRadius: '8px', fontFamily: 'monospace', fontSize: '0.85rem', overflowX: 'auto', border: '1px solid rgba(255,255,255,0.05)', color: '#fca5a5' }}>
+          <strong>Error Details:</strong><br />
+          {error.message || String(error)}
+        </div>
+        <p style={{ marginTop: '1.5rem', fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: '1.5' }}>
+          <strong>Potential Causes:</strong><br />
+          1. <code>DATABASE_URL</code> environment variable is missing, incorrect, or not published in the Vercel project settings.<br />
+          2. The database schema has not been pushed to the Supabase PostgreSQL database (ensure you've run <code>npm run db:push</code>).<br />
+          3. Connection pooling issues. (Consider using Supabase connection pooler port <code>6543</code>).
+        </p>
+      </div>
+    )
+  }
 
-  // Simple conversion rate calculation
-  const conversionRate = totalLeads > 0 ? ((wonLeads / totalLeads) * 100).toFixed(1) : '0.0'
+  const { totalLeads, hotLeads, negotiatingLeads, wonLeads, totalProducts, recentLeads, conversionRate } = stats;
 
   return (
     <div className="animate-fade-in">
