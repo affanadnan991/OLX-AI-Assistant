@@ -3,6 +3,7 @@ import { z } from 'zod'
 const envSchema = z.object({
   // Database
   DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
+  DIRECT_URL: z.string().optional(),
 
   // OpenAI / AI Provider
   OPENAI_API_KEY: z.string().min(1, 'OPENAI_API_KEY is required'),
